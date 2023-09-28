@@ -11,16 +11,15 @@ const view = asyncHandler(async(req: Request, res: Response) =>{
   const fields = Object.keys(req.body)
   requestFields(requests, fields)
 
-  // const checkInfo = await prisma.users
- const getInfoUser = await prisma.users.findUnique({
+  const getInfoUser = await prisma.users.findUnique({
     where:{
       email: req.body.email
     },
   })
 
-  if(!getInfoUser) throw new Error("Wrong email!")
+  if(!getInfoUser) throw new Error("messageBackend:incorrect_email")
   const checkPass = await bcrypt.compare(req.body.password, getInfoUser.password)
-  if(!checkPass)  throw new Error("Wrong password!")
+  if(!checkPass)  throw new Error("messageBackend:incorrect_password")
   
   //pass
   const { password, ...user } = getInfoUser;

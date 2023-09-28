@@ -23,24 +23,25 @@ model posts {
 }
 
 model users {
-  id                                       Int             @id @default(autoincrement())
-  email                                    String          @unique(map: "Users_email_key") @db.VarChar(255)
-  password                                 String          @db.VarChar(255)
-  phone_number_country                     String          @db.VarChar(255)
-  phone_number_digit                       String          @db.VarChar(255)
-  avatar                                   String?         @db.VarChar(255)
-  name                                     String          @db.VarChar(255)
-  company_name                             String          @db.VarChar(255)
-  company_type                             users_role       
-  tax_code                                 String?         @db.VarChar(255)
-  business_type                            String?         @db.VarChar(255)
-  is_verified                              Boolean         @default(false)
-  created_at                               DateTime        @default(now()) @db.Timestamp(0)
-  follows_follows_followed_user_idTousers  follows[]       @relation("follows_followed_user_idTousers")
-  follows_follows_following_user_idTousers follows[]       @relation("follows_following_user_idTousers")
+  id                                       Int                  @id @default(autoincrement())
+  email                                    String               @unique(map: "Users_email_key") @db.VarChar(255)
+  password                                 String               @db.VarChar(255)
+  avatar                                   String?              @db.VarChar(255)
+  name                                     String               @db.VarChar(255)
+  company_name                             String               @db.VarChar(255)
+  company_type                             users_role
+  tax_code                                 String?              @db.VarChar(255)
+  business_type                            String?              @db.VarChar(255)
+  is_verified                              Boolean              @default(false)
+  created_at                               DateTime             @default(now()) @db.Timestamp(0)
+  phone_number_country                     String               @db.VarChar(255)
+  phone_number_digit                       String               @db.VarChar(255)
+  confirm_otp_google                       confirm_otp_google[] 
+  follows_follows_followed_user_idTousers  follows[]            @relation("follows_followed_user_idTousers")
+  follows_follows_following_user_idTousers follows[]            @relation("follows_following_user_idTousers")
   messages                                 messages[]
   notifications                            notifications[]
-  post_comments                            post_comments[]    
+  post_comments                            post_comments[]
   post_likes                               post_likes[]
   posts                                    posts[]
   room_users                               room_users[]
@@ -136,7 +137,24 @@ model notifications {
   @@index([user_id], map: "fk_notifications_users_id")
 }
 
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model confirm_otp_google {
+  id         Int         @id @default(autoincrement())
+  code       String      @db.VarChar(255)
+  purpose    purpose_otp
+  created_at DateTime    @default(now()) @db.Timestamp(0)
+  user_id    Int
+  users      users       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_confirm_otp_google_users_id")
+
+  @@index([user_id], map: "fk_confirm_otp_google_users_id")
+}
+
 enum users_role {
   INVESTORS
-  STARTUP
+  STARTUPS
+}
+
+enum purpose_otp {
+  CONFIRM_REGISTER
+  CONFIRM_FORGOT_PASSWORD
 }

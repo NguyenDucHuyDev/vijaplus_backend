@@ -22,7 +22,7 @@ const view = asyncHandler(async(req: Request, res: Response) => {
     }
   })
 
-  if(emailExist) throw new Error("Email already exists")
+  if(emailExist) throw new Error("messageBackend:email_already_exists")
 
   const phoneExist = await prisma.users.findFirst({
     where: {
@@ -31,12 +31,12 @@ const view = asyncHandler(async(req: Request, res: Response) => {
     },
   })
 
-  if(phoneExist) throw new Error("Phone already exists")
+  if(phoneExist) throw new Error("messageBackend:phone_already_exists")
 
   //pass
   const encrypt_pass =  await bcrypt.hash(req.body.password, 10);
 
-  if(req.body.company_type == 0) req.body.company_type = "STARTUP"
+  if(req.body.company_type == 0) req.body.company_type = "STARTUPS"
   if(req.body.company_type == 1) req.body.company_type = "INVESTORS"
 
   const setInfoUser = await prisma.users.create({
